@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--ESTO ES PARA EL DISEÑO DE LOS BOTONES EN REDONDEADO -->
+    <corners android:radius="16dp"/>
+    <solid android:color="@color/design_default_color_on_primary"/>
+    <gradient android:angle="45"
+        android:startColor="#A6634D"
+        android:endColor="#FFC107"/>
+</shape>
