@@ -19,12 +19,12 @@
 
     <TextView
         android:id="@+id/textViewTitulo"
-        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Url"
+        android:layout_marginTop="10dp"
+        android:text="titulo"
         android:textColor="#121111"
-        android:textSize="25sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.519"

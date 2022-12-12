@@ -67,7 +67,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 .error(R.mipmap.ic_launcher)
                 .into(holder.img);
 
-        holder.txtViewArtista.setText(anime.getUrl());
+        holder.txtViewArtista.setText(anime.getAnime_name());
 
        
     }

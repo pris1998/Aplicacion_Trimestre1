@@ -49,12 +49,10 @@ public class InicioActivity extends AppCompatActivity {
         // incializo los objetos recyclerView y recyclerAdapter
         recyclerView = (RecyclerView) findViewById(R.id.recyView);
         //conexion API
-        new taskConnections().execute("GET", "/hug?amount=2");
+        new taskConnections().execute("GET", "/hug?amount=20");
 
-        // AletDialog sin boton , llamar al metodo
-        AlertDialog alertDialog = createAlertDialog("Recordatorio", "Puede borrar elementos de la lista haciendo SWIPE "
-                                                    + " tanto a la derecha como a la izquierda");
-        alertDialog.show();
+        myToast("Puede borrar elementos de la lista haciendo SWIPE "
+                + " tanto a la derecha como a la izquierda");
         /**
          * Flecha para volver atras
          */
@@ -64,6 +62,9 @@ public class InicioActivity extends AppCompatActivity {
         }
 
         //BORRAR HACEINDO SWIPE
+        /**
+         * Crear un ItemTouchHelper para poder borrar los elementos tando de izquierda a derecha
+         */
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT ) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -73,15 +74,21 @@ public class InicioActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder target, int direction) {
                 int position = target.getAdapterPosition();
-                listaAnime.remove(position);
-                recAdapter.notifyDataSetChanged();
+                createAlertDialog("Aviso","¿Desea borrar el elemento?",position).show();
             }
         });
         helper.attachToRecyclerView(recyclerView);
 
 
     }
+    public void borrar(int position, int borrar){
 
+        if(borrar == 1 ){
+            listaAnime.remove(position);
+            recAdapter.notifyDataSetChanged();
+        }
+
+    }
     /**
      * Manejo del MENU_SIMPLE
      * Metodo  indica que la app tiene un menu personalizado.
@@ -93,7 +100,7 @@ public class InicioActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.simple_menu, menu);
         return true;
     }
-    
+
     /**
      * Metodo para manejar la seleciona del menu según el item seleccionado
      * @param item
@@ -211,20 +218,22 @@ public class InicioActivity extends AppCompatActivity {
      * @param mensaje
      * @return
      */
-    public AlertDialog createAlertDialog (String nameAlert, String mensaje){
+    public AlertDialog createAlertDialog (String nameAlert, String mensaje,int position){
         AlertDialog.Builder builder = new AlertDialog.Builder(InicioActivity.this);
+
         builder.setMessage(mensaje).setTitle(nameAlert);
         //este codigo es una vez que estas en la pantalla modal del AlertDialog
         builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(InicioActivity.this, "Ha pulsado el botón de Si",Toast.LENGTH_LONG).show();
+                Toast.makeText(InicioActivity.this, "Ha seleccionado Si",Toast.LENGTH_LONG).show();
+                borrar(position,1);
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(InicioActivity.this, "Ha pulsado el botón de No",Toast.LENGTH_LONG).show();
+                Toast.makeText(InicioActivity.this, "Ha seleccionado de No",Toast.LENGTH_LONG).show();
             }
         });
         return builder.create();
