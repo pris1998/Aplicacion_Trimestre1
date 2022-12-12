@@ -93,18 +93,7 @@ public class InicioActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.simple_menu, menu);
         return true;
     }
-    //FLECHA CONFIGURACION
-    /*
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:  
-                onBackPressed();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
+    
     /**
      * Metodo para manejar la seleciona del menu según el item seleccionado
      * @param item
@@ -128,8 +117,10 @@ public class InicioActivity extends AppCompatActivity {
                 startActivity(intent2);
                 myToast("Boton Añadir seleccionado");
                 Log.i("Hoja se Añadir ","Esta en la hoja de Añadir , Conseguido");
-
                 break;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
         }
         return true;
     }

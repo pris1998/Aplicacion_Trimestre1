@@ -41,6 +41,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     //añadido la biblioteca a Gradle
     implementation 'androidx.preference:preference:1.1.1'
-    //biblioteca externa
-    //implementation 'com.github.andreasagap:LoadingButtonLibrary:v1.0'
+
+
 }

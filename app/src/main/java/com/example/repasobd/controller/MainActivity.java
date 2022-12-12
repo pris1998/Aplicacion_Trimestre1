@@ -36,25 +36,6 @@ public class MainActivity extends AppCompatActivity {
 
         textPass = findViewById(R.id.txtPassword);
         datoUser = new DatesUser(this);
-        // boton de la biblioteca externa
-        //btnLogin = findViewById(R.id.btnLogin);
-        /*
-        buttonLoading.setOnButtonLoadingListener(new ButtonLoading.OnButtonLoadingListener() {
-            @Override
-            public void onClick() {
-                //...
-            }
-
-            @Override
-            public void onStart() {
-                //...
-            }
-
-            @Override
-            public void onFinish() {
-                //...
-            }
-        });*/
 
         circularprogressdrawable = new CircularProgressDrawable(this);
         circularprogressdrawable.setStrokeWidth(10f);
