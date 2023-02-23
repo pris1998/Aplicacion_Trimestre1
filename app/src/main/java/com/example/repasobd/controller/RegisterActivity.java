@@ -3,6 +3,7 @@ package com.example.repasobd.controller;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -32,19 +33,23 @@ public class RegisterActivity extends AppCompatActivity {
         btnCrearCuenta.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                ClassUser userRegistro = new ClassUser();
-                userRegistro.setUsuario(userReg.getText().toString());
-                userRegistro.setContraseña(passReg.getText().toString());
-                userRegistro.setEmailUser(emailReg.getText().toString());
-                if (!userRegistro.isNull()){
-                    myToast("Error: campos vacíos");
-                }else if(datoUser.insertarUsuario(userRegistro) == 1){
-                    //myToast("Usuario registrado");
-                    Intent intent2 = new Intent(RegisterActivity.this , MainActivity.class);
-                    startActivity(intent2);
 
+                String user = userReg.getText().toString().trim();
+                String pass = passReg.getText().toString().trim();
+
+                if (!user.equals("") || !pass.equals("") ) {
+                    //boolean checkuserpass = db.checkPassword(user, pass);
+                    if (!datoUser.checkUser(user)) {
+                        if (datoUser.insertarUsuario(user,pass) != -1) {
+                            myToast( "Usuario creado");
+                        }else{
+                            myToast( "Invalid Credentials");
+                        }
+                    }else{
+                        myToast( "El usario ya existe" );
+                    }
                 }else{
-                    myToast("El usuario ya existe");
+                    myToast( "No puede haber campos vacíos");
                 }
             }
         });
@@ -57,10 +62,9 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-
-
     }
     public void myToast(String msg){
         Toast.makeText(this,msg,Toast.LENGTH_LONG).show();
     }
+
 }

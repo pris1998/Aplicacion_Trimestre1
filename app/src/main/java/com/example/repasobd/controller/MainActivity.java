@@ -60,29 +60,16 @@ public class MainActivity extends AppCompatActivity {
                 String recibeContrasenia = textPass.getText().toString().trim();
 
                 //vemos si esta vacio
-                if (recibeUser.equals("") && recibeContrasenia.equals("")) {
-                    //mensaje
-                    Log.d("SELECT * FROM TABLE_NAME", "Obtencion de datos ");
-
-                    Snackbar.make(view, "Error: los campos estan vacios , no los has rellenado", Snackbar.LENGTH_SHORT).show();
+                if (!recibeUser.equals("") || !recibeContrasenia.equals("")) {
+                    if (datoUser.checkPassword(recibeUser,recibeContrasenia)) {
+                        Toast.makeText(MainActivity.this, "Registro existoso,usuario y contraseña registrado", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(MainActivity.this, InicioActivity.class);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(MainActivity.this, "Registro fallido,usuario no existe", Toast.LENGTH_LONG).show();
+                    }
                 } else {
-
-
-                    /*if (datoUser.loginMetodo(recibeUser, recibeContrasenia) == 1) {
-
-                        //darle acceso a la base de datos aunque los datos ya esten guardados
-                        //datoUser.loginMetodo(recibeUser, recibeContrasenia);
-                        Snackbar.make(view, "Datos correctos", Snackbar.LENGTH_SHORT).show();
-                        Log.d("Datos ", "Exito de datos");
-                        //comprobar que te lo haya cogido para pasar de hoja
-
-
-                    }else{*/
-
-                    Intent intent = new Intent(MainActivity.this, InicioActivity.class);
-                    startActivity(intent);
-                    Toast.makeText(MainActivity.this, "Usuario existe", Toast.LENGTH_LONG).show();
-
+                    Toast.makeText(MainActivity.this, "Por favor,complete los campos", Toast.LENGTH_LONG).show();
                 }
             }
             });

@@ -7,6 +7,7 @@
             android:entries="@array/arrayColores"
             android:entryValues="@array/arrayColores"
             android:key="color"
+            android:textColor="#131313"
             android:title="Elige un color" />
     </PreferenceCategory>
 </PreferenceScreen>

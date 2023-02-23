@@ -3,6 +3,7 @@ package com.example.repasobd.model;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -38,81 +39,48 @@ public class DatesUser extends SQLiteOpenHelper {
 
     }
 
-    public long insertarUsuario(ClassUser user){
+    public long insertarUsuario(String user, String password){
         //metodo de buscar el usuario y si esta vacio
         SQLiteDatabase baseDatossql = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(USER_COLUMN,user.getUsuario());
-        cv.put(PASSWORD_COLUMN,user.getContrasenia());
-        long numFilas = baseDatossql.insert(TABLE_NAME , null ,cv );
-
+        cv.put(USER_COLUMN,user);
+        cv.put(PASSWORD_COLUMN,password);
+        long numFilas = -1;
+        numFilas = baseDatossql.insert(TABLE_NAME , null ,cv );
+        baseDatossql.close();
         return numFilas;
     }
     /**
      * Este metodo de buscar el UsuarioClass me va a buscar el usuario registrado
      *
      * */
-
-    public boolean  selecionarUsuarios(String...params){
-
-        boolean esValido = true;
-        listaUsuarios.clear();
-        String[] columns = new String[]{USER_COLUMN, PASSWORD_COLUMN};
-        String selection = "" ;
-        String[] filter = null;
-        baseDatossql = getReadableDatabase();
-        switch(params.length){
-            case 1:
-                selection = USER_COLUMN + "=? AND" + PASSWORD_COLUMN +"=?";
-                filter = new String[]{params[0] , params[1]};
-                break;
+    public boolean checkUser (String user){
+        boolean devuelveValor = false;
+        SQLiteDatabase baseDatossql = this.getWritableDatabase();
+        Cursor cursor = baseDatossql.rawQuery(" SELECT * FROM "+TABLE_NAME + " WHERE "
+                +USER_COLUMN + " = '" + user + "'", null);
+        if (cursor.moveToFirst()) {
+            devuelveValor = true;
         }
-        Cursor cursor =baseDatossql.query(TABLE_NAME , columns ,selection,filter, null, null, null);
-
-
-        //preguntamos si esta vacio
-        if (cursor!=null && cursor.moveToFirst()){
-            //recorrer nuestro resultado
-            do{
-                //si nos devuelve algun registro
-                user = new ClassUser();
-                user.setIdUsuario(cursor.getInt(0));
-                user.setUsuario(cursor.getString(1));
-                user.setContraseña(cursor.getString(2));
-                user.setEmailUser(cursor.getString(3));
-                //añadir lo anterior a la lista de los UsuarioClass
-                listaUsuarios.add(user);
-            }while(cursor.moveToNext());
-        }
-        return esValido;
-    }
-    //busque dentro de la base de datos el usuario
-    public int loginMetodo(String usuario, String pass) {
-        int devuelveValor = -1;
-        String selection = "";
-        String[] columns = {USER_COLUMN};
-
-        baseDatossql = getReadableDatabase();
-
-        selection = USER_COLUMN + "= ? AND " + PASSWORD_COLUMN + "= ?";
-        String[]filter = {usuario, pass};
-
-
-        Cursor cursor = baseDatossql.query(TABLE_NAME, columns, selection, filter, null, null, null);
-
-        //preguntamos si no  esta vacio
-        if ( cursor.getCount() > 0 ) {
-            //recorrer nuestro resultado
-
-            //me duvuelva el resultado de los dos valores del usuario
-            devuelveValor = 1;
-            cursor.close();
-
-        }
+        cursor.close();
         baseDatossql.close();
-
         return devuelveValor;
+    }
 
+    public boolean checkPassword(String username, String password){
+        boolean existe = false;
+        SQLiteDatabase MyDB = this.getReadableDatabase();
+        try{
+            Cursor cursor = MyDB.rawQuery("SELECT * FROM " + TABLE_NAME +
+                    " WHERE " + USER_COLUMN + " = '" + username +
+                    "' AND " + PASSWORD_COLUMN + " = '" + password + "'", null);
+            if (cursor.moveToFirst()) {
+                existe = true;
+            }
+            cursor.close();
+        }catch(SQLException ex){}
+        MyDB.close();
+        return existe;
     }
     //Sobrecargamos onCreate, encargado de crear las tablas asociadas a la base de datos.
     @Override

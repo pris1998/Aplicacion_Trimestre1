@@ -1,27 +1,31 @@
 package com.example.repasobd.controller;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import android.view.View;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.repasobd.R;
 import com.example.repasobd.adapter.RecyclerAdapter;
 import com.example.repasobd.io.HttpConnectGeneral;
-import com.example.repasobd.model.Anime;
+import com.example.repasobd.model.Amiibo;
 import com.example.repasobd.utilities.Preferences;
 
 import org.json.JSONArray;
@@ -29,16 +33,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class InicioActivity extends AppCompatActivity {
+
+public class InicioActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     private ConstraintLayout constraintLayout;
     RecyclerView recyclerView;//uso para la API
-    RecyclerAdapter recAdapter;
-    private ArrayList<Anime> listaAnime = new ArrayList<>();
+    public RecyclerAdapter recAdapter;
+    TextView txtProgreso;
+    private int amiiboSeleccionado = 0;
 
-
-
+    private ArrayList<Amiibo> listaAmiibo = new ArrayList<>();
+    private androidx.appcompat.view.ActionMode mActionMode;
+    private androidx.appcompat.view.ActionMode mActionModeAmiibo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,101 +54,160 @@ public class InicioActivity extends AppCompatActivity {
         constraintLayout.setBackgroundColor(Preferences.loadPreferences(this));
         // incializo los objetos recyclerView y recyclerAdapter
         recyclerView = (RecyclerView) findViewById(R.id.recyView);
-        //conexion API
-        new taskConnections().execute("GET", "/hug?amount=20");
+
+        txtProgreso = (TextView) findViewById(R.id.txtProgreso);
+        //el menu action llamada
+        //mActionMode = startSupportActionMode(mActionCallback);
+        //cargue la pagina hasta que salga toda la informacion
+        new publishTask().execute();
 
         myToast("Puede borrar elementos de la lista haciendo SWIPE "
                 + " tanto a la derecha como a la izquierda");
+
         /**
          * Flecha para volver atras
          */
         ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
         if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true); //si existe (no es nulo) mostramos el botón hacia atrás.
         }
 
-        //BORRAR HACEINDO SWIPE
-        /**
-         * Crear un ItemTouchHelper para poder borrar los elementos tando de izquierda a derecha
-         */
-        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT ) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder target, int direction) {
-                int position = target.getAdapterPosition();
-                createAlertDialog("Aviso","¿Desea borrar el elemento?",position).show();
-            }
-        });
-        helper.attachToRecyclerView(recyclerView);
+        //llamar al contenedor para la vista maestro-detalle
+        //getSupportFragmentManager().beginTransaction().
+               // replace(R.id.ContenedorPersonajes,recyclerView).commit();
 
 
     }
-    public void borrar(int position, int borrar){
 
-        if(borrar == 1 ){
-            listaAnime.remove(position);
-            recAdapter.notifyDataSetChanged();
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        recAdapter.filtrado(s);
+        return false;
+    }
+
+
+    //Todo.Cargar la informacion de la API ponemos un hilo secunadario
+
+    private class publishTask extends AsyncTask<Void, Integer, Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            for(int i=0; i<=100 ; i++){
+                try {
+                    Thread.sleep(50);
+                    //Todo 1.3. Método que llama a onProgressUpdate() pasandole como parametro el
+                    // elemento necesario para actualizar la vista
+                    publishProgress(i);
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
         }
 
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            txtProgreso.setText(values[0].toString() + "%");
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            txtProgreso.setEnabled(false);
+            new taskConnections().execute("GET", "amiibo/?name=mario");
+            txtProgreso.setVisibility(View.INVISIBLE);
+        }
     }
-    /**
-     * Manejo del MENU_SIMPLE
-     * Metodo  indica que la app tiene un menu personalizado.
-     * Uso el inflate para crear la vista y pasar el menu por defecto para así colocarlo en la vista
-     * @param menu
-     * @return
-     */
+
+
+    //Menu action
+    private ActionMode.Callback mActionCallback = new ActionMode.Callback() {
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.action_menu,menu);
+            mode.setTitle("Action Menu");
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            int itemSeleccionado = item.getItemId();
+            switch (itemSeleccionado) {
+                case R.id.item_Preferencias:
+                    //Boton que te dirige a la Actividad de Prefenrencias
+                    Intent intent = new Intent(InicioActivity.this, SettingActivity.class);
+                    startActivity(intent);
+                    myToast("Boton Preferencias seleccionado");
+                    Log.i("Hoja se preferencias ", "Esta en la hoja de Prefencias , Conseguido");
+                    break;
+                case android.R.id.home:
+                    onBackPressed();
+                    return true;
+            }
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+        }
+    };
+
+    private ActionMode.Callback mActionAmiiboCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.action_menu_amiibo,menu);
+            mode.setTitle("LISTA");
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            int itemSeleccionado = item.getItemId();
+            switch (itemSeleccionado) {
+                case R.id.item_eliminar:
+                    AlertDialog alertDialog = createAlertDialog("ALERTA","¿Seguro que quieres borrar el elemento?");
+                    alertDialog.show();
+                    mActionModeAmiibo.finish();
+                    break;
+                case android.R.id.home:
+                    onBackPressed();
+                    return true;
+            }
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionModeAmiibo = null;
+        }
+    };
+
+
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.simple_menu, menu);
+        getMenuInflater().inflate(R.menu.action_menu, menu);
         return true;
     }
 
-    /**
-     * Metodo para manejar la seleciona del menu según el item seleccionado
-     * @param item
-     * @return true
-     */
-    public boolean onOptionsItemSelected(MenuItem item){
-        int itemSeleccionado = item.getItemId();
-
-        switch (itemSeleccionado){
-            case R.id.item_Preferencias:
-                //Boton que te dirige a la Actividad de Prefenrencias
-                Intent intent = new Intent(InicioActivity.this , SettingActivity.class);
-                startActivity(intent);
-                myToast("Boton Preferencias seleccionado");
-                Log.i("Hoja se preferencias ","Esta en la hoja de Prefencias , Conseguido");
-                break;
-            case R.id.item_Anadir:
-                //Este boton no funciona al pulsar sobre el y que me lleve a la AddActivity
-                //Boton que te dirige a la Actividad Nueva para añadir un elemento a la lista
-                Intent intent2 = new Intent(InicioActivity.this , AddActivity.class);
-                startActivity(intent2);
-                myToast("Boton Añadir seleccionado");
-                Log.i("Hoja se Añadir ","Esta en la hoja de Añadir , Conseguido");
-                break;
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-        return true;
-    }
     public void myToast(String msg){
         Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * RecyclerView
-     */
-
-    //agregar un elemento desde AddActivity al recyclerView
-    public void agregarPersonaje (Anime anime){
-        listaAnime.add(anime);
-        // this.notifyItemInserted(this.mascotas.size() - 1);
     }
 
     /**
@@ -164,7 +229,7 @@ public class InicioActivity extends AppCompatActivity {
             String salida = null;
             switch (strings[0]){
                 case "GET":
-                    salida = HttpConnectGeneral.getRequest(strings[1]);
+                    salida = HttpConnectGeneral.getRequest("");
                     break;
                  }
             return salida;
@@ -173,23 +238,26 @@ public class InicioActivity extends AppCompatActivity {
         protected void onPostExecute(String texto){
         try{
             if (texto != null) {
+
+                String character = "";
+                String amiiboSeries = "";
+                String gameSeries = "";
+                String imagen = "";
+
                 Log.d("D","Datos recibidos "+texto);
-               JSONObject jsonObject = new JSONObject(texto);
-               JSONArray jsonArrayName = jsonObject.getJSONArray("results");
-               JSONArray jsonArrayUrl = jsonObject.getJSONArray("results");
-
-
-                String anime_name = "";
-                String url = "";
-
-
-                for (int i = 0; i < jsonArrayName.length(); i++) {
+                JSONObject raiz = new JSONObject(texto);
+                JSONArray jsonArray = raiz.getJSONArray("amiibo");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject amiiboJSON = jsonArray.getJSONObject(i);
                     //revisar el JSON
-                    anime_name = jsonArrayName.getJSONObject(i).getString("anime_name");
-                    url = jsonArrayUrl.getJSONObject(i).getString("url");
+                    character = amiiboJSON.getString("character");
+                    amiiboSeries = amiiboJSON.getString("amiiboSeries");
+                    gameSeries = amiiboJSON.getString("gameSeries");
+                    imagen = amiiboJSON.getString("image");
 
-                    listaAnime.add(new Anime(anime_name,url));
+                    listaAmiibo.add(new Amiibo(character,amiiboSeries,gameSeries,imagen));
                 }
+
                 mostrarDatos();
 
             }else{
@@ -206,42 +274,62 @@ public class InicioActivity extends AppCompatActivity {
          * Disponer del espacio que se usara para colocar los elementos en su lugar
          * Añadimos los elementos creados a la vista del RecyclerView con los métodos
          */
-        recAdapter = new RecyclerAdapter(listaAnime);
+        recAdapter = new RecyclerAdapter(listaAmiibo);
+        recAdapter.setLongClicklistener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                amiiboSeleccionado = recyclerView.getChildAdapterPosition(view);
+                Toast.makeText(view.getContext(),"Has tocado el elemento " + amiiboSeleccionado,Toast.LENGTH_SHORT).show();
+                mActionModeAmiibo = startSupportActionMode(mActionAmiiboCallback);
+                //createAlertDialog("Borrado","¿Estás seguro de borrar ?");
+                return true;
+            }
+        });
+        recAdapter.setClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                amiiboSeleccionado = recyclerView.getChildAdapterPosition(view);
+                Log.d("Hola", "wenos dias");
+                Amiibo amiibo = listaAmiibo.get(amiiboSeleccionado);
+                Intent intent = new Intent(InicioActivity.this, AddActivity.class);
+                intent.putExtra("AMIIBO", amiibo);
+                startActivity(intent);
+            }
+        });
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setAdapter(recAdapter);
         recyclerView.setLayoutManager(layoutManager);
     }
 
-    /**
-     * Metodo para crear el AlertDialog y sus botones
-      * @param nameAlert
-     * @param mensaje
-     * @return
-     */
-    public AlertDialog createAlertDialog (String nameAlert, String mensaje,int position){
-        AlertDialog.Builder builder = new AlertDialog.Builder(InicioActivity.this);
+    public AlertDialog createAlertDialog (String nameAlert, String mensaje){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setMessage(mensaje).setTitle(nameAlert);
         //este codigo es una vez que estas en la pantalla modal del AlertDialog
         builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(InicioActivity.this, "Ha seleccionado Si",Toast.LENGTH_LONG).show();
-                borrar(position,1);
+                borrar(recAdapter.pos,1);
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(InicioActivity.this, "Ha seleccionado de No",Toast.LENGTH_LONG).show();
+                Toast.makeText(InicioActivity.this, "Ha seleccionado No",Toast.LENGTH_LONG).show();
             }
         });
         return builder.create();
     }
+    public void borrar(int position, int borrar){
 
+        if(borrar == 1 ){
+            listaAmiibo.remove(amiiboSeleccionado);
+            recAdapter.notifyItemRemoved(amiiboSeleccionado);
+        }
 
-
+    }
 
 
 
 }
+

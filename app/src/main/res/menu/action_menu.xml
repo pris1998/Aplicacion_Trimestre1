@@ -4,12 +4,8 @@
 
     <item
         android:id="@+id/item_Preferencias"
-        android:icon="@drawable/img1"
+        android:icon="@drawable/img"
         android:title="Preferencias"
         app:showAsAction="ifRoom|withText" />
-    <item
-        android:id="@+id/item_Anadir"
-        android:icon="@drawable/img2"
-        android:title="Añadir"
-        app:showAsAction="ifRoom" />
+
 </menu>

@@ -11,7 +11,6 @@ import androidx.preference.PreferenceManager;
 
 
 public class Preferences {
-
     public static int loadPreferences(Context context){
         int itemSeleccionado = Color.WHITE;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -33,10 +32,13 @@ public class Preferences {
                 itemSeleccionado = Color.GREEN;
                 Toast.makeText(context,"Color verde",Toast.LENGTH_LONG).show();
                 break;
+            case "blanco":
+                //color blanco
+                itemSeleccionado = Color.WHITE;
+                Toast.makeText(context,"Color por defecto",Toast.LENGTH_LONG).show();
+                break;
         }
         return itemSeleccionado;
-
-
     }
 
 }

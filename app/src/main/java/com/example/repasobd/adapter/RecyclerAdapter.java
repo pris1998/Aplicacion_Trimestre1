@@ -7,22 +7,48 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.bumptech.glide.Glide;
 import com.example.repasobd.R;
-import com.example.repasobd.controller.MainActivity;
-import com.example.repasobd.model.Anime;
+import com.example.repasobd.model.Amiibo;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder>{
-    List<Anime> listMovies;
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder> {
+    //implements View.OnClickListener
+    List<Amiibo> listaAmiibo;
+    public int pos;
+    private View.OnLongClickListener longClicklistener;
+    private View.OnClickListener clickListener;
+    public boolean isSelected;
+    //
+    //lista parafiltrar en la Busqueda
+    ArrayList<Amiibo> listaAux;
 
-    public RecyclerAdapter(List<Anime> listMovies) {
-        this.listMovies = listMovies;
+    public RecyclerAdapter(List<Amiibo> listaAmiibo) {
+        this.listaAmiibo = listaAmiibo;
+        listaAux = new ArrayList<>();
+        this.listaAux.addAll(listaAmiibo);
+    }
+
+    public View.OnLongClickListener getLongClicklistener() {
+        return longClicklistener;
+    }
+
+    public void setLongClicklistener(View.OnLongClickListener longClicklistener) {
+        this.longClicklistener = longClicklistener;
+    }
+
+    public View.OnClickListener getClickListener() {
+        return clickListener;
+    }
+
+    public void setClickListener(View.OnClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 
     /**
@@ -37,6 +63,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @Override
     public RecyclerAdapter.RecyclerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_item_list,parent, false);
+        //
+        //view.setOnLongClickListener((View.OnLongClickListener) this);
+        //
         RecyclerHolder recyclerHolder = new RecyclerHolder(view);
         return recyclerHolder;
     }
@@ -52,7 +81,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @Override
     public void onBindViewHolder(@NonNull RecyclerAdapter.RecyclerHolder holder, int position) {
         CircularProgressDrawable circularprogressdrawable;
-        Anime anime = listMovies.get(position);
+        Amiibo amiibo = listaAmiibo.get(position);
         circularprogressdrawable = new CircularProgressDrawable(holder.itemView.getContext());
         circularprogressdrawable.setStrokeWidth(10f);
         circularprogressdrawable.setStyle(CircularProgressDrawable.LARGE);
@@ -61,19 +90,51 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         /**
          * Esta parte es la del ImfenView crea un Glide llamando desde un enlace a la foto
          */
+        holder.txtAmiiboSerie.setText(amiibo.getAmiiboSeries());
+        holder.txtCharacter.setText(amiibo.getCharacter());
+        holder.txtGameS.setText(amiibo.getGameSeries());
         Glide.with(holder.itemView.getContext())
-                .load(anime.getUrl())
+                .load(amiibo.getImagen())
                 .placeholder(R.mipmap.ic_launcher)
                 .error(R.mipmap.ic_launcher)
-                .into(holder.img);
+                .into(holder.imagen);
 
-        holder.txtViewArtista.setText(anime.getAnime_name());
+    }
+    public void filtrado(String cadenaTexto){
+        int longitud = cadenaTexto.length();
+        if (longitud == 0) {
+            listaAmiibo.clear();
+            listaAmiibo.addAll(listaAux);
+        }else{
 
-       
+            List<Amiibo> collectionNew = listaAmiibo.stream()
+                    .filter(i -> i.getCharacter().toLowerCase()
+                    .contains(cadenaTexto.toLowerCase()))
+                    .collect(Collectors.toList());
+            listaAmiibo.clear();
+            listaAmiibo.addAll(listaAux);
+        }
+        notifyDataSetChanged();
     }
 
     @Override
-    public int getItemCount() {return listMovies.size();}
+    public int getItemCount() {return listaAmiibo.size();}
+
+
+    /*
+    public void setOnClickListener(View.OnClickListener listener){
+        this.listener = listener;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (listener != null) {
+            listener.onClick(view);
+        }
+    }*/
+    //
+
+
 
     /**
      * Esta clase es la que hereda de ViewHolder.Se encarga de recargar lso elementos
@@ -81,9 +142,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
      * que recibe con custom_item_list.xml
      */
     public class RecyclerHolder extends RecyclerView.ViewHolder{
-        ImageView img;
-        TextView txtViewArtista;
-        TextView txtViewUrlArtista;
+        TextView txtAmiiboSerie;
+        TextView txtCharacter;
+        TextView txtGameS;
+        ImageView imagen;
+
 
         /**
          * Este es el contructor que recibe como parametro el tipo de viste ,
@@ -92,9 +155,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
          */
         public RecyclerHolder(View itemView){
             super(itemView);
-            img = itemView.findViewById(R.id.img_item);
-            txtViewArtista = itemView.findViewById(R.id.textViewTitulo);
-            txtViewUrlArtista = itemView.findViewById(R.id.textViewDescripcion);
+            txtAmiiboSerie = itemView.findViewById(R.id.txtAmiiboSerie);
+            txtCharacter = itemView.findViewById(R.id.txtCharacter);
+            txtGameS = itemView.findViewById(R.id.txtGameS);
+            imagen = itemView.findViewById(R.id.img_item);
+            itemView.setOnLongClickListener(longClicklistener);
+            itemView.setOnClickListener(clickListener);
         }
+
+
     }
 }

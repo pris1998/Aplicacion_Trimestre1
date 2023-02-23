@@ -8,7 +8,7 @@ import java.net.URL;
 
 public class HttpConnectGeneral {
     //URL
-    private static final String URL_BASE ="https://nekos.best/api/v2";
+    private static final String URL_BASE ="https://www.amiiboapi.com/api/amiibo/";
     //metodo àra peticiones GET
     public static String getRequest(String enpoint){
         HttpURLConnection http = null;
@@ -32,7 +32,6 @@ public class HttpConnectGeneral {
             e.printStackTrace();
         }
         finally {
-
             //desconecto la conexión.
             if( http != null ) http.disconnect();
         }
