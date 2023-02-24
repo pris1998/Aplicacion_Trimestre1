@@ -99,6 +99,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 .error(R.mipmap.ic_launcher)
                 .into(holder.imagen);
 
+
+
     }
     public void filtrado(String cadenaTexto){
         int longitud = cadenaTexto.length();

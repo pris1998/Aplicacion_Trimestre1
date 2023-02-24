@@ -57,12 +57,11 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
 
         txtProgreso = (TextView) findViewById(R.id.txtProgreso);
         //el menu action llamada
-        //mActionMode = startSupportActionMode(mActionCallback);
+        mActionMode = startSupportActionMode(mActionCallback);
         //cargue la pagina hasta que salga toda la informacion
         new publishTask().execute();
 
-        myToast("Puede borrar elementos de la lista haciendo SWIPE "
-                + " tanto a la derecha como a la izquierda");
+
 
         /**
          * Flecha para volver atras
@@ -72,10 +71,6 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
         if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true); //si existe (no es nulo) mostramos el botón hacia atrás.
         }
-
-        //llamar al contenedor para la vista maestro-detalle
-        //getSupportFragmentManager().beginTransaction().
-               // replace(R.id.ContenedorPersonajes,recyclerView).commit();
 
 
     }

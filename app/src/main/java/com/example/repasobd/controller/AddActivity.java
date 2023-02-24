@@ -4,13 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.repasobd.R;
+import com.example.repasobd.model.Amiibo;
 
 public class AddActivity extends AppCompatActivity {
-
+    Amiibo amiibo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +31,9 @@ public class AddActivity extends AppCompatActivity {
             2) Crearte el XML con los datos que quieres mostrar de ese Amiibo en concreto.
             3) Yasta.
          */
-       
+        Amiibo amiibo = (Amiibo) getIntent().getExtras().getSerializable("AMIIBO");
+
+
     }
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
