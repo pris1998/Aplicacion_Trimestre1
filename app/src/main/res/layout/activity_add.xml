@@ -5,6 +5,7 @@
     android:id="@+id/ContenedorPersonajes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/fondo3"
     tools:context=".controller.AddActivity">
 
     <ImageView
@@ -21,11 +22,13 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="66dp"
+        android:layout_width="75dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="24dp"
         android:layout_marginEnd="32dp"
         android:text="Personaje"
+        android:textColor="#131313"
+        android:textColorHint="#131313"
         app:layout_constraintBottom_toTopOf="@+id/guideline5"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,6 +41,8 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:text="Game Serie"
+        android:textColor="#131313"
+        android:textColorHint="#131313"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,6 +54,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
+        android:textColor="#131313"
+        android:textColorHint="#131313"
         app:layout_constraintBottom_toTopOf="@+id/guideline5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
@@ -61,6 +68,8 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
+        android:textColor="#131313"
+        android:textColorHint="#131313"
         android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toEndOf="parent"

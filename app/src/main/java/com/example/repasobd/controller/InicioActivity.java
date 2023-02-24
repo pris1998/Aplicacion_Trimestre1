@@ -128,7 +128,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.action_menu,menu);
-            mode.setTitle("Action Menu");
+            mode.setTitle("Menu del Amiibo");
             return true;
         }
 
@@ -276,7 +276,6 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
                 amiiboSeleccionado = recyclerView.getChildAdapterPosition(view);
                 Toast.makeText(view.getContext(),"Has tocado el elemento " + amiiboSeleccionado,Toast.LENGTH_SHORT).show();
                 mActionModeAmiibo = startSupportActionMode(mActionAmiiboCallback);
-                //createAlertDialog("Borrado","¿Estás seguro de borrar ?");
                 return true;
             }
         });
@@ -284,7 +283,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
             @Override
             public void onClick(View view) {
                 amiiboSeleccionado = recyclerView.getChildAdapterPosition(view);
-                Log.d("Hola", "wenos dias");
+
                 Amiibo amiibo = listaAmiibo.get(amiiboSeleccionado);
                 Intent intent = new Intent(InicioActivity.this, AddActivity.class);
                 intent.putExtra("AMIIBO", amiibo);
