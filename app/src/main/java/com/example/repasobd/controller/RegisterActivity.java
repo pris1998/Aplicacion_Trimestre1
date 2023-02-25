@@ -3,7 +3,6 @@ package com.example.repasobd.controller;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +10,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.repasobd.R;
-import com.example.repasobd.model.ClassUser;
 import com.example.repasobd.model.DatesUser;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -38,11 +36,11 @@ public class RegisterActivity extends AppCompatActivity {
                 String pass = passReg.getText().toString().trim();
 
                 if (!user.equals("") || !pass.equals("") ) {
-                    //boolean checkuserpass = db.checkPassword(user, pass);
                     if (!datoUser.checkUser(user)) {
                         if (datoUser.insertarUsuario(user,pass) != -1) {
                             myToast( "Usuario creado");
                         }else{
+
                             myToast( "Invalid Credentials");
                         }
                     }else{
@@ -56,6 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnCancelar.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                //Vuelve a la actividad del MainActivity
                 Intent intent = new Intent(RegisterActivity.this , MainActivity.class);
                 startActivity(intent);
 

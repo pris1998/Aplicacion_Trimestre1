@@ -5,7 +5,7 @@
     android:id="@+id/ContenedorPersonajes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/fondo3"
+    android:background="@drawable/fondoapp3"
     tools:context=".controller.AddActivity">
 
     <ImageView

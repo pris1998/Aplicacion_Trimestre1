@@ -25,19 +25,12 @@ public class AddActivity extends AppCompatActivity {
         textoCharacter = findViewById(R.id.textoCharacter);
         textogameSeries = findViewById(R.id.textogameSeries);
         imagenPersonaje = findViewById(R.id.imagenPersonaje);
-        /**
-         * Flecha para volver atras
-         */
+        //Activacion de la flecha para volver hacia atrás
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true); //Todo 3.1 si existe (no es nulo) mostramos el botón hacia atrás.
         }
 
-        /*
-            1) Conseguir el Intent del Amiibo con getExtra  getIntent().getExtras().elmetodoquesea;
-            2) Crearte el XML con los datos que quieres mostrar de ese Amiibo en concreto.
-            3) Yasta.
-         */
         Amiibo amiibo = (Amiibo) getIntent().getExtras().getSerializable("AMIIBO");
         textoCharacter.setText(amiibo.getCharacter());
         textogameSeries.setText(amiibo.getGameSeries());
@@ -52,7 +45,7 @@ public class AddActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:  //  acceso al recurso del botón volver
-                onBackPressed();     // método que tiene Android para volver hacia la ventana anterior.
+                onBackPressed();     // vuelve hacia la ventana anterior.
                 return true;
         }
 

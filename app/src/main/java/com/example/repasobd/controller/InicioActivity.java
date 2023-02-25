@@ -1,5 +1,6 @@
 package com.example.repasobd.controller;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,8 +38,11 @@ import java.util.ArrayList;
 
 public class InicioActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     private ConstraintLayout constraintLayout;
+    //variable RecyclerView
     RecyclerView recyclerView;//uso para la API
+    //variable del RecyclerAdapter
     public RecyclerAdapter recAdapter;
+    //variable del progreso
     TextView txtProgreso;
     private int amiiboSeleccionado = 0;
 
@@ -54,25 +58,19 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
         constraintLayout.setBackgroundColor(Preferences.loadPreferences(this));
         // incializo los objetos recyclerView y recyclerAdapter
         recyclerView = (RecyclerView) findViewById(R.id.recyView);
-
+        //inicializo la variable del progreso
         txtProgreso = (TextView) findViewById(R.id.txtProgreso);
-        //el menu action llamada
+        //llamada al menu_action
         mActionMode = startSupportActionMode(mActionCallback);
-        //cargue la pagina hasta que salga toda la informacion
+        //se carga la pagina hasta salid toda la informacion requerida
         new publishTask().execute();
 
-
-
-        /**
-         * Flecha para volver atras
-         */
+        //Activacion de la flecha para volver hacia atrás
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
         if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true); //si existe (no es nulo) mostramos el botón hacia atrás.
         }
-
-
     }
 
     @Override
@@ -87,7 +85,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
 
-    //Todo.Cargar la informacion de la API ponemos un hilo secunadario
+    //Hilo secundario para cargar la informacion de la API
 
     private class publishTask extends AsyncTask<Void, Integer, Void>{
         @Override
@@ -96,8 +94,8 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
             for(int i=0; i<=100 ; i++){
                 try {
                     Thread.sleep(50);
-                    //Todo 1.3. Método que llama a onProgressUpdate() pasandole como parametro el
-                    // elemento necesario para actualizar la vista
+                    //llamada al onProgressUpdate() pasandole como parametro el
+                    // elemento para actualizar la vista
                     publishProgress(i);
 
                 } catch (InterruptedException e) {
@@ -110,19 +108,24 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
+            //le asignamos lo que va a sacer el txtProgreso por pantalla
             txtProgreso.setText(values[0].toString() + "%");
         }
 
         @Override
         protected void onPostExecute(Void unused) {
+            //Posibilitamos el txtProgreso
             txtProgreso.setEnabled(false);
+            //llamamos a la API para que haga una especie de recarga hasta que aparaezcan
+            //todos los elementos
             new taskConnections().execute("GET", "amiibo/?name=mario");
+            //hacemos el txtProgreso invisible cuando se haya cargado la lista
             txtProgreso.setVisibility(View.INVISIBLE);
         }
     }
 
 
-    //Menu action
+    //LLamamos al menu y le añadimos los métodos
     private ActionMode.Callback mActionCallback = new ActionMode.Callback() {
 
         @Override
@@ -141,11 +144,10 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
             int itemSeleccionado = item.getItemId();
             switch (itemSeleccionado) {
                 case R.id.item_Preferencias:
-                    //Boton que te dirige a la Actividad de Prefenrencias
+                    //Intent que dirije hacia la actividad de Prefernecias
                     Intent intent = new Intent(InicioActivity.this, SettingActivity.class);
                     startActivity(intent);
                     myToast("Boton Preferencias seleccionado");
-                    Log.i("Hoja se preferencias ", "Esta en la hoja de Prefencias , Conseguido");
                     break;
                 case android.R.id.home:
                     onBackPressed();
@@ -163,6 +165,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
     private ActionMode.Callback mActionAmiiboCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            //Creacion del menu para borrar elementos de la lista
             mode.getMenuInflater().inflate(R.menu.action_menu_amiibo,menu);
             mode.setTitle("LISTA");
             return true;
@@ -206,7 +209,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
     /**
-     * Carga de OnResume
+     * Mantiene todo guardado desde el último momento que se tocó
      */
     @Override
     protected void onResume() {
@@ -218,7 +221,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
      * Configuracion de la API
      */
     private class taskConnections extends AsyncTask<String,Void,String>{
-
+        //Llama desde segundo plano para obtener la informacion de la API
         @Override
         protected String doInBackground(String... strings) {
             String salida = null;
@@ -238,21 +241,23 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
                 String amiiboSeries = "";
                 String gameSeries = "";
                 String imagen = "";
-
+                //Almacena los datos de la API en un archivo JSON
                 Log.d("D","Datos recibidos "+texto);
                 JSONObject raiz = new JSONObject(texto);
                 JSONArray jsonArray = raiz.getJSONArray("amiibo");
+                //Recorre el json
                 for (int i = 0; i < jsonArray.length(); i++) {
+                    //va sacando la informacion , en este
+                    //caso el personaje, la imagen...
                     JSONObject amiiboJSON = jsonArray.getJSONObject(i);
-                    //revisar el JSON
                     character = amiiboJSON.getString("character");
                     amiiboSeries = amiiboJSON.getString("amiiboSeries");
                     gameSeries = amiiboJSON.getString("gameSeries");
                     imagen = amiiboJSON.getString("image");
-
+                    //añade la informacion a la lista
                     listaAmiibo.add(new Amiibo(character,amiiboSeries,gameSeries,imagen));
                 }
-
+                //llamamos al metodo de mostrar los datos
                 mostrarDatos();
 
             }else{
@@ -265,14 +270,15 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
     private void mostrarDatos(){
-        /**
-         * Disponer del espacio que se usara para colocar los elementos en su lugar
-         * Añadimos los elementos creados a la vista del RecyclerView con los métodos
-         */
+        //Colocacion de los elementos en el lugar que corresponde y añade esos
+        //elementos a la vista creada del RecyclerView
+
         recAdapter = new RecyclerAdapter(listaAmiibo);
         recAdapter.setLongClicklistener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                //A la variable amiiboSelecionado inicializamos los elementos de la lista
+                //que va seleccionando
                 amiiboSeleccionado = recyclerView.getChildAdapterPosition(view);
                 Toast.makeText(view.getContext(),"Has tocado el elemento " + amiiboSeleccionado,Toast.LENGTH_SHORT).show();
                 mActionModeAmiibo = startSupportActionMode(mActionAmiiboCallback);
@@ -283,9 +289,11 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
             @Override
             public void onClick(View view) {
                 amiiboSeleccionado = recyclerView.getChildAdapterPosition(view);
-
+                //Obtener el amibo seleccionado de la lista
                 Amiibo amiibo = listaAmiibo.get(amiiboSeleccionado);
+                //Cambia de vista
                 Intent intent = new Intent(InicioActivity.this, AddActivity.class);
+                //añade el valor del EditText al intent
                 intent.putExtra("AMIIBO", amiibo);
                 startActivity(intent);
             }
@@ -294,18 +302,19 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
         recyclerView.setAdapter(recAdapter);
         recyclerView.setLayoutManager(layoutManager);
     }
-
+    //Cracion de un metodo del AlertDialog
     public AlertDialog createAlertDialog (String nameAlert, String mensaje){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setMessage(mensaje).setTitle(nameAlert);
-        //este codigo es una vez que estas en la pantalla modal del AlertDialog
+        //Si pulsa "si" borra el elemento de la lista
         builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 borrar(recAdapter.pos,1);
             }
         });
+        //Si pulsa "no"el elemento de la lsita se mantiene
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -314,13 +323,23 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
         });
         return builder.create();
     }
+    //Elemento para borrar elementos
     public void borrar(int position, int borrar){
-
         if(borrar == 1 ){
             listaAmiibo.remove(amiiboSeleccionado);
             recAdapter.notifyItemRemoved(amiiboSeleccionado);
         }
 
+    }
+    //metodo que hace referencia a la flecha
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:  //  acceso al recurso del botón volver
+                onBackPressed();     // vuelve hacia la ventana anterior.
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 

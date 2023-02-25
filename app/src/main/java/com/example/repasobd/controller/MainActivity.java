@@ -42,24 +42,21 @@ public class MainActivity extends AppCompatActivity {
         circularprogressdrawable.setStyle(CircularProgressDrawable.LARGE);
         circularprogressdrawable.setCenterRadius(30f);
         circularprogressdrawable.start();
-        /**
-         * Esta parte es la del ImfenView crea un Glide llamando desde un enlace a la foto
-         */
+
+        //Genera la imagen con Glide
         Glide.with(MainActivity.this)
-                .load("https://img00.deviantart.net/8a9a/i/2010/057/8/5/totoro_by_autodach.jpg")
+                .load("https://www.pinterest.es/pin/784681935064916793/")
                 .placeholder(circularprogressdrawable)
-                .error(R.drawable.img_login)
+                .error(R.drawable.icono)
                 .into(imgPersona);
-        /**
-         * Funcionalidad del boton Entrar del Login desde un Listener
-         */
+
         btnEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String recibeUser = textUser.getText().toString().trim();
                 String recibeContrasenia = textPass.getText().toString().trim();
 
-                //vemos si esta vacio
+                //comporbacion si los campos estan vacios o no , con sus respectivos mensajes
                 if (!recibeUser.equals("") || !recibeContrasenia.equals("")) {
                     if (datoUser.checkPassword(recibeUser,recibeContrasenia)) {
                         Toast.makeText(MainActivity.this, "Registro existoso,usuario y contraseña registrado", Toast.LENGTH_LONG).show();
@@ -73,12 +70,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             });
-        /**
-         * Funcionalidad del boton Registrar del Login desde un Listener
-         */
+
         btnRegistrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //al no estar resgistrada te lleva a la ActividadRegister
                 Intent intent = new Intent (MainActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }

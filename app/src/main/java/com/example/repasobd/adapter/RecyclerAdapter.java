@@ -19,22 +19,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder> {
-    //implements View.OnClickListener
-    List<Amiibo> listaAmiibo;
+    //ArrayList almacena los personajes de la API de ammibo
+    //List<Amiibo> listaAmiibo;
     public int pos;
+    //Creacion de los sensores
     private View.OnLongClickListener longClicklistener;
     private View.OnClickListener clickListener;
     public boolean isSelected;
     //
     //lista parafiltrar en la Busqueda
-    ArrayList<Amiibo> listaAux;
+    ArrayList<Amiibo> listaAmiibo;
 
     public RecyclerAdapter(List<Amiibo> listaAmiibo) {
-        this.listaAmiibo = listaAmiibo;
-        listaAux = new ArrayList<>();
-        this.listaAux.addAll(listaAmiibo);
+        this.listaAmiibo = (ArrayList<Amiibo>) listaAmiibo;
+        listaAmiibo = new ArrayList<>();
+        this.listaAmiibo.addAll(listaAmiibo);
     }
-
+    //Creacion de los metodos de listeners
     public View.OnLongClickListener getLongClicklistener() {
         return longClicklistener;
     }
@@ -51,33 +52,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         this.clickListener = clickListener;
     }
 
-    /**
-     * Este metodo crea la estructura de los elementos de cada celda , a partir del layout
-     * Creo un objeto de la vista, coger la vista y anidarla en la estructura una vez hecho eso
-     * retornamos el objeto creado del recyclerholder
-     * @param parent
-     * @param viewType
-     * @return
-     */
     @NonNull
     @Override
     public RecyclerAdapter.RecyclerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_item_list,parent, false);
-        //
-        //view.setOnLongClickListener((View.OnLongClickListener) this);
-        //
+
         RecyclerHolder recyclerHolder = new RecyclerHolder(view);
         return recyclerHolder;
     }
 
-    /**
-     * Este metodo se encarga de unir la informacion con cada celda del RecyclerView
-     * Crea un objeto de mi clase Peliculas para luego asignarle la lista donde almacena los elementos
-     * una vex hecho eso, asigna a cada elemento la informacion en la lista y tambien
-     * en cada elemento de la gráfica de la celda
-     * @param holder
-     * @param position
-     */
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerAdapter.RecyclerHolder holder, int position) {
         CircularProgressDrawable circularprogressdrawable;
@@ -87,9 +71,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         circularprogressdrawable.setStyle(CircularProgressDrawable.LARGE);
         circularprogressdrawable.setCenterRadius(30f);
         circularprogressdrawable.start();
-        /**
-         * Esta parte es la del ImfenView crea un Glide llamando desde un enlace a la foto
-         */
+
         holder.txtAmiiboSerie.setText(amiibo.getAmiiboSeries());
         holder.txtCharacter.setText(amiibo.getCharacter());
         holder.txtGameS.setText(amiibo.getGameSeries());
@@ -102,11 +84,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
 
     }
+    //Método para filtar la lista
     public void filtrado(String cadenaTexto){
         int longitud = cadenaTexto.length();
         if (longitud == 0) {
+            //limpia la lista
             listaAmiibo.clear();
-            listaAmiibo.addAll(listaAux);
+            //añade a la lista un nuevo elemento
+            listaAmiibo.addAll(listaAmiibo);
         }else{
 
             List<Amiibo> collectionNew = listaAmiibo.stream()
@@ -114,7 +99,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                     .contains(cadenaTexto.toLowerCase()))
                     .collect(Collectors.toList());
             listaAmiibo.clear();
-            listaAmiibo.addAll(listaAux);
+            listaAmiibo.addAll(listaAmiibo);
         }
         notifyDataSetChanged();
     }
@@ -122,26 +107,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @Override
     public int getItemCount() {return listaAmiibo.size();}
 
-
-    /*
-    public void setOnClickListener(View.OnClickListener listener){
-        this.listener = listener;
-    }
-
-    @Override
-    public void onClick(View view) {
-        if (listener != null) {
-            listener.onClick(view);
-        }
-    }*/
-    //
-
-
-
     /**
-     * Esta clase es la que hereda de ViewHolder.Se encarga de recargar lso elementos
-     * de la vista de layout de cada elemento de la lista según el modelo de datos
-     * que recibe con custom_item_list.xml
+     * Recargar elementos de la vista ,cada uno de los elementos de la lista con su modelo
+     * de dato.
      */
     public class RecyclerHolder extends RecyclerView.ViewHolder{
         TextView txtAmiiboSerie;
@@ -151,8 +119,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
 
         /**
-         * Este es el contructor que recibe como parametro el tipo de viste ,
-         * contiene los parametros que corresponde a los elementos del custom_item_list.xml
+         * Recoge el tipo de vista con los parametros
          * @param itemView
          */
         public RecyclerHolder(View itemView){

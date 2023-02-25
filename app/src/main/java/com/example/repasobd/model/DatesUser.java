@@ -12,26 +12,19 @@ import java.util.ArrayList;
 
 public class DatesUser extends SQLiteOpenHelper {
     Context context;
-    ClassUser user;
-    ArrayList<ClassUser> listaUsuarios;
-    SQLiteDatabase baseDatossql ;
+
 
     private static final int DB_VERSION = 3;
     //nombre base de datos
     private static final String TABLE_NAME = "bd_Usuario";
 
-
+    //nombre de las columnas
     private static final String USER_COLUMN = "user";
     private static final String PASSWORD_COLUMN = "pass_user";
     //Database name
     private static final String DB_NAME = "bd_user";
 
-    /**
-     * Constructor de la base de datos, si no existe la base de datos la crea, sino se conecta.
-     *  En el caso de que se hiciese una actualización y se cambiase la versión,
-     *  el constructor llamaría al método onUpgrade para actualizar los cambios de la base de datos.
-     * @param context1 Contexto de la aplicación
-     */
+    //Constructor de la Base de Datos
 
     public DatesUser(Context context1) {
         super(context1, DB_NAME, null, DB_VERSION);
@@ -39,8 +32,13 @@ public class DatesUser extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * Método para insertar un usuario
+     * @param user el nombre del usuario
+     * @param password la contraseña insertada
+     * @return numFilas
+     */
     public long insertarUsuario(String user, String password){
-        //metodo de buscar el usuario y si esta vacio
         SQLiteDatabase baseDatossql = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(USER_COLUMN,user);
@@ -50,39 +48,48 @@ public class DatesUser extends SQLiteOpenHelper {
         baseDatossql.close();
         return numFilas;
     }
-    /**
-     * Este metodo de buscar el UsuarioClass me va a buscar el usuario registrado
-     *
-     * */
+    //Método sirve para chequear el usuario
     public boolean checkUser (String user){
         boolean devuelveValor = false;
+        //Escribe en la base de datos
         SQLiteDatabase baseDatossql = this.getWritableDatabase();
+        //Cursor recorre la sentencia SELECt
         Cursor cursor = baseDatossql.rawQuery(" SELECT * FROM "+TABLE_NAME + " WHERE "
                 +USER_COLUMN + " = '" + user + "'", null);
+        //Cursor esta en la primera poscion devuelve true
         if (cursor.moveToFirst()) {
             devuelveValor = true;
         }
+        //Cierra el cursor, el base de datos
         cursor.close();
         baseDatossql.close();
+        //Retorna el valor al habero chequeado
         return devuelveValor;
     }
-
+    //Método sirve para chequear la contraseña
     public boolean checkPassword(String username, String password){
+        //Variable booleana para comprobar que la contraseña existe
         boolean existe = false;
+        //Le la baseDatos
         SQLiteDatabase MyDB = this.getReadableDatabase();
         try{
+            //Recorre la sentencia SELECT
             Cursor cursor = MyDB.rawQuery("SELECT * FROM " + TABLE_NAME +
                     " WHERE " + USER_COLUMN + " = '" + username +
                     "' AND " + PASSWORD_COLUMN + " = '" + password + "'", null);
+            //Cursor esta en la primera poscion devuelve true
             if (cursor.moveToFirst()) {
                 existe = true;
             }
+            //Cierra el cursor
             cursor.close();
         }catch(SQLException ex){}
+        //Cierra la base de datos
         MyDB.close();
         return existe;
     }
-    //Sobrecargamos onCreate, encargado de crear las tablas asociadas a la base de datos.
+    //Sobrecargamos onCreate
+    // Encarga de crear las tablas asociadas a la base de datos.
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         //comando de la tabla
