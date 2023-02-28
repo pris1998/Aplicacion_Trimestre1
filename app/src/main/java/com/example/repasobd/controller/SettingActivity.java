@@ -26,20 +26,20 @@ public class SettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
         constraintLayout = findViewById(R.id.setting_container);
-
+        //Sirve para añadir el fragmente de la clase (SettingFragment) a la vista
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.setting_container, new SettingFragment())   //Todo 2.1 Es en esta línea donde se reemplaza el contenedor por una instancia de la clase SettingFragment
                 .commit();
         constraintLayout.setBackgroundColor(Preferences.loadPreferences(this));
-        /**
-         * Flecha para volver atras
-         */
+
+        //Activa la flecha para volver a la actividad anterior
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true); //Todo 3.1 si existe (no es nulo) mostramos el botón hacia atrás.
         }
     }
+    //Añade el efecto de volver a la actividad anterior
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:  
@@ -49,9 +49,8 @@ public class SettingActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    /**
-     * Carga de OnResume, hay que usarlo para que te lo guarde
-     */
+
+    //Carga de OnResume, hay que usarlo para que te lo guarde desde el ultimo momento
     @Override
     protected void onResume() {
         super.onResume();

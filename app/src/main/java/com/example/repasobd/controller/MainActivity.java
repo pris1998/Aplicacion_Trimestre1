@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 String recibeUser = textUser.getText().toString().trim();
                 String recibeContrasenia = textPass.getText().toString().trim();
 
-                //comporbacion si los campos estan vacios o no , con sus respectivos mensajes
+                //Comporbacion si los campos estan vacios o no , con sus respectivos mensajes
                 if (!recibeUser.equals("") || !recibeContrasenia.equals("")) {
                     if (datoUser.checkPassword(recibeUser,recibeContrasenia)) {
                         Toast.makeText(MainActivity.this, "Registro existoso,usuario y contraseña registrado", Toast.LENGTH_LONG).show();
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         btnRegistrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //al no estar resgistrada te lleva a la ActividadRegister
+                //Al no estar resgistrado te lleva a la ActividadRegister
                 Intent intent = new Intent (MainActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }

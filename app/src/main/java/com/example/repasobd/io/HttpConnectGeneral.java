@@ -18,7 +18,7 @@ public class HttpConnectGeneral {
             http = (HttpURLConnection) url.openConnection();
             http.setRequestProperty("Content-Type", "application/json");
             http.setRequestProperty("Accept", "application/json");
-            //si el servidor devuelve un codigo (HTTP_OK == 200) todo ha salido bien
+            //Si el servidor devuelve un codigo (HTTP_OK == 200) todo ha salido bien
             if( http.getResponseCode() == HttpURLConnection.HTTP_OK ) {
                 //Comprueba que ha realizado correctamente
                 StringBuilder sb = new StringBuilder();
@@ -39,7 +39,7 @@ public class HttpConnectGeneral {
             e.printStackTrace();
         }
         finally {
-            //desconecto la conexión.
+            //Desconecto la conexión.
             if( http != null ) http.disconnect();
         }
         return content;

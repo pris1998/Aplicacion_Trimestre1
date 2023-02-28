@@ -30,10 +30,13 @@ public class AddActivity extends AppCompatActivity {
         if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true); //Todo 3.1 si existe (no es nulo) mostramos el botón hacia atrás.
         }
-
+        //Cargamos la informacion que queremos mostrar desde una clave "AMIIBO" coincide con
+        //onClick que se encuentra en la actividad de Incio y que hace referencia a la informacion de la lista
+        //donde se encuentra los objetos
         Amiibo amiibo = (Amiibo) getIntent().getExtras().getSerializable("AMIIBO");
         textoCharacter.setText(amiibo.getCharacter());
         textogameSeries.setText(amiibo.getGameSeries());
+        //Glide para la image
         Glide.with(imagenPersonaje)
                 .load(amiibo.getImagen())
                 .placeholder(R.mipmap.ic_launcher)
@@ -42,6 +45,7 @@ public class AddActivity extends AppCompatActivity {
 
 
     }
+    //Metodo que hace referencia a la flecha
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:  //  acceso al recurso del botón volver

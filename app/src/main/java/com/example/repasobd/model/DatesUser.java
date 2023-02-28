@@ -9,16 +9,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
-
+//Extendemos SQLiteOpenHelper para acceder a los metodos de la base de datos
 public class DatesUser extends SQLiteOpenHelper {
     Context context;
 
 
     private static final int DB_VERSION = 3;
-    //nombre base de datos
+    //Nombre base de datos
     private static final String TABLE_NAME = "bd_Usuario";
 
-    //nombre de las columnas
+    //Nombre de las columnas
     private static final String USER_COLUMN = "user";
     private static final String PASSWORD_COLUMN = "pass_user";
     //Database name
@@ -92,9 +92,10 @@ public class DatesUser extends SQLiteOpenHelper {
     // Encarga de crear las tablas asociadas a la base de datos.
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        //comando de la tabla
+        //Comando de la tabla
         String CREATE_USER_TABLE = "CREATE TABLE " +TABLE_NAME+ "("
                 + USER_COLUMN + " TEXT PRIMARY KEY, " + PASSWORD_COLUMN + "  TEXT) ";
+        //Lanza la consulta
         sqLiteDatabase.execSQL(CREATE_USER_TABLE);
 
     }

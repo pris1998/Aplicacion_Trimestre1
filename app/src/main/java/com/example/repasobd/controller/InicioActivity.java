@@ -38,11 +38,11 @@ import java.util.ArrayList;
 
 public class InicioActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     private ConstraintLayout constraintLayout;
-    //variable RecyclerView
+    //Variable RecyclerView
     RecyclerView recyclerView;//uso para la API
-    //variable del RecyclerAdapter
+    //Variable del RecyclerAdapter
     public RecyclerAdapter recAdapter;
-    //variable del progreso
+    //Variable del progreso
     TextView txtProgreso;
     private int amiiboSeleccionado = 0;
 
@@ -53,16 +53,16 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inicio);
-        //cargar Preferencias
+        //Cargar Preferencias
         constraintLayout = findViewById(R.id.container_inicio);
         constraintLayout.setBackgroundColor(Preferences.loadPreferences(this));
-        // incializo los objetos recyclerView y recyclerAdapter
+        //Incializo los objetos recyclerView y recyclerAdapter
         recyclerView = (RecyclerView) findViewById(R.id.recyView);
-        //inicializo la variable del progreso
+        //Inicializo la variable del progreso
         txtProgreso = (TextView) findViewById(R.id.txtProgreso);
-        //llamada al menu_action
+        //Llamada al menu_action
         mActionMode = startSupportActionMode(mActionCallback);
-        //se carga la pagina hasta salid toda la informacion requerida
+        //Se carga la pagina hasta salid toda la informacion requerida
         new publishTask().execute();
 
         //Activacion de la flecha para volver hacia atrás
@@ -72,12 +72,13 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
             actionBar.setDisplayHomeAsUpEnabled(true); //si existe (no es nulo) mostramos el botón hacia atrás.
         }
     }
-
+    //Se ejecuta cuando el usuario envía la consulta.
     @Override
     public boolean onQueryTextSubmit(String s) {
         return false;
     }
 
+    //Se ejecuta cuando el usuario cambia el texto de la consulta.
     @Override
     public boolean onQueryTextChange(String s) {
         recAdapter.filtrado(s);
@@ -94,8 +95,8 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
             for(int i=0; i<=100 ; i++){
                 try {
                     Thread.sleep(50);
-                    //llamada al onProgressUpdate() pasandole como parametro el
-                    // elemento para actualizar la vista
+                    //Llamada al onProgressUpdate() pasandole como parametro el
+                    //Elemento para actualizar la vista
                     publishProgress(i);
 
                 } catch (InterruptedException e) {
@@ -108,7 +109,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            //le asignamos lo que va a sacer el txtProgreso por pantalla
+            //Le asignamos lo que va a sacer el txtProgreso por pantalla
             txtProgreso.setText(values[0].toString() + "%");
         }
 
@@ -116,10 +117,10 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
         protected void onPostExecute(Void unused) {
             //Posibilitamos el txtProgreso
             txtProgreso.setEnabled(false);
-            //llamamos a la API para que haga una especie de recarga hasta que aparaezcan
+            //Llamamos a la API para que haga una especie de recarga hasta que aparaezcan
             //todos los elementos
             new taskConnections().execute("GET", "amiibo/?name=mario");
-            //hacemos el txtProgreso invisible cuando se haya cargado la lista
+            //Hacemos el txtProgreso invisible cuando se haya cargado la lista
             txtProgreso.setVisibility(View.INVISIBLE);
         }
     }
@@ -208,9 +209,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
         Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Mantiene todo guardado desde el último momento que se tocó
-     */
+    //Carga de OnResume, hay que usarlo para que te lo guarde desde el ultimo momento
     @Override
     protected void onResume() {
         super.onResume();
@@ -247,17 +246,17 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
                 JSONArray jsonArray = raiz.getJSONArray("amiibo");
                 //Recorre el json
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    //va sacando la informacion , en este
+                    //Va sacando la informacion , en este
                     //caso el personaje, la imagen...
                     JSONObject amiiboJSON = jsonArray.getJSONObject(i);
                     character = amiiboJSON.getString("character");
                     amiiboSeries = amiiboJSON.getString("amiiboSeries");
                     gameSeries = amiiboJSON.getString("gameSeries");
                     imagen = amiiboJSON.getString("image");
-                    //añade la informacion a la lista
+                    //Añade la informacion a la lista
                     listaAmiibo.add(new Amiibo(character,amiiboSeries,gameSeries,imagen));
                 }
-                //llamamos al metodo de mostrar los datos
+                //Llamamos al metodo de mostrar los datos
                 mostrarDatos();
 
             }else{
@@ -293,7 +292,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
                 Amiibo amiibo = listaAmiibo.get(amiiboSeleccionado);
                 //Cambia de vista
                 Intent intent = new Intent(InicioActivity.this, AddActivity.class);
-                //añade el valor del EditText al intent
+                //Añade el valor del EditText al intent
                 intent.putExtra("AMIIBO", amiibo);
                 startActivity(intent);
             }
@@ -314,7 +313,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
                 borrar(recAdapter.pos,1);
             }
         });
-        //Si pulsa "no"el elemento de la lsita se mantiene
+        //Si pulsa "no"el elemento de la lista se mantiene
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -331,7 +330,7 @@ public class InicioActivity extends AppCompatActivity implements SearchView.OnQu
         }
 
     }
-    //metodo que hace referencia a la flecha
+    //Metodo que hace referencia a la flecha
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:  //  acceso al recurso del botón volver

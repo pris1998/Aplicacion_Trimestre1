@@ -19,15 +19,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder> {
-    //ArrayList almacena los personajes de la API de ammibo
-    //List<Amiibo> listaAmiibo;
     public int pos;
     //Creacion de los sensores
     private View.OnLongClickListener longClicklistener;
     private View.OnClickListener clickListener;
     public boolean isSelected;
-    //
-    //lista parafiltrar en la Busqueda
+    //ArrayList almacena los personajes de la API de ammibo
     ArrayList<Amiibo> listaAmiibo;
 
     public RecyclerAdapter(List<Amiibo> listaAmiibo) {
@@ -51,7 +48,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     public void setClickListener(View.OnClickListener clickListener) {
         this.clickListener = clickListener;
     }
-
+    //Creación de la estructura de componentes de cada celta de la lista
     @NonNull
     @Override
     public RecyclerAdapter.RecyclerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -61,11 +58,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         return recyclerHolder;
     }
 
-
+    //Enlaza y crea la vista con la informacion de cada una de las celdas
     @Override
     public void onBindViewHolder(@NonNull RecyclerAdapter.RecyclerHolder holder, int position) {
         CircularProgressDrawable circularprogressdrawable;
         Amiibo amiibo = listaAmiibo.get(position);
+        //Se configura el CircularProgressDrawable
         circularprogressdrawable = new CircularProgressDrawable(holder.itemView.getContext());
         circularprogressdrawable.setStrokeWidth(10f);
         circularprogressdrawable.setStyle(CircularProgressDrawable.LARGE);
@@ -75,6 +73,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.txtAmiiboSerie.setText(amiibo.getAmiiboSeries());
         holder.txtCharacter.setText(amiibo.getCharacter());
         holder.txtGameS.setText(amiibo.getGameSeries());
+        //Glide para la image
         Glide.with(holder.itemView.getContext())
                 .load(amiibo.getImagen())
                 .placeholder(R.mipmap.ic_launcher)
@@ -88,9 +87,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     public void filtrado(String cadenaTexto){
         int longitud = cadenaTexto.length();
         if (longitud == 0) {
-            //limpia la lista
+            //Limpia la lista
             listaAmiibo.clear();
-            //añade a la lista un nuevo elemento
+            //Añade a la lista un nuevo elemento
             listaAmiibo.addAll(listaAmiibo);
         }else{
 
@@ -107,21 +106,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @Override
     public int getItemCount() {return listaAmiibo.size();}
 
-    /**
-     * Recargar elementos de la vista ,cada uno de los elementos de la lista con su modelo
-     * de dato.
-     */
+    // Recargar elementos de la vista ,cada uno de los elementos de la lista con su modelode dato.
     public class RecyclerHolder extends RecyclerView.ViewHolder{
         TextView txtAmiiboSerie;
         TextView txtCharacter;
         TextView txtGameS;
         ImageView imagen;
 
-
-        /**
-         * Recoge el tipo de vista con los parametros
-         * @param itemView
-         */
+        // Recoge el tipo de vista con los parametros
         public RecyclerHolder(View itemView){
             super(itemView);
             txtAmiiboSerie = itemView.findViewById(R.id.txtAmiiboSerie);
